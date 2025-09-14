@@ -1,20 +1,24 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import com.example.DigitalWallet;
+import static org.junit.jupiter.api.Assertions.*;
 
+public class Deposito {
 
-class Deposito {
-        
-        void deveDepositarValoresValidos(double amount) {
-            
-        }
-
-        
-        void deveLancarExcecaoParaDepositoInvalido(double amount) {
-            
-        }
+    @Test
+    void testDepositValid() {
+        DigitalWallet wallet = new DigitalWallet("Alice", 100.0);
+        wallet.deposit(50.0);
+        assertEquals(150.0, wallet.getBalance());
     }
+
+    @ParameterizedTest
+    @ValueSource(doubles = {0.0, -10.0, -100.0})
+    void testDepositInvalid(double invalidAmount) {
+        DigitalWallet wallet = new DigitalWallet("Alice", 100.0);
+        assertThrows(IllegalArgumentException.class, () -> {
+            wallet.deposit(invalidAmount);
+        });
+    }
+}
