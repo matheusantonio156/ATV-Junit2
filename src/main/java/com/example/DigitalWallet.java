@@ -51,4 +51,32 @@ public class DigitalWallet {
         }
         this.balance += amount;
     }
+
+    
+    public boolean pay(double amount) {
+        if (!verified || locked) {
+            throw new IllegalStateException("Carteira não verificada ou bloqueada");
+        }
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Pagamento deve ser maior que zero");
+        }
+
+        if (balance >= amount) {
+            balance -= amount;
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
+    public void refund(double amount) {
+        if (!verified || locked) {
+            throw new IllegalStateException("Carteira não verificada ou bloqueada");
+        }
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Estorno deve ser maior que zero");
+        }
+        this.balance += amount;
+    }
 }
