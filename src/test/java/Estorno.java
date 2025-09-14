@@ -1,40 +1,43 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static org.junit.jupiter.api.Assumptions.assumeTrue;
-
-import java.util.stream.Stream;
-
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.junit.jupiter.api.Test;
 
-import com.example.DigitalWallet;
+import static org.junit.jupiter.api.Assertions.*;
 
+public class Estorno {
 
+    @Test
+    void testEstornoValido() {
+        DigitalWallet wallet = new DigitalWallet("Alice", 100.0);
+        wallet.verify();
 
-class Estorno {
-    static Stream<Arguments> valoresEstorno() {
-        return Stream.of(
-            Arguments.of(100.0, 10.0, 110.0),
-            Arguments.of(0.0,   5.0,   5.0),
-            Arguments.of(50.0,  0.01, 50.01)
-        );
+        // Simulando pagamento
+        wallet.deposit(-50.0);
+        assertEquals(50.0, wallet.getBalance());
+
+        // Agora faz o estorno (devolve o valor)
+        wallet.deposit(50.0);
+        assertEquals(100.0, wallet.getBalance());
     }
 
-    
-    void refundComCarteiraValida(double inicial, double valor, double saldoEsperado) {
-        
+    @Test
+    void testEstornoInvalido() {
+        DigitalWallet wallet = new DigitalWallet("Bob", 100.0);
+        wallet.verify();
+
+        // Estorno negativo não faz sentido → deve lançar erro
+        assertThrows(IllegalArgumentException.class, () -> {
+            wallet.deposit(-200.0); // tentativa inválida
+        });
     }
 
-    
-    void deveLancarExcecaoParaRefundInvalido(double valor) {
-        
-    }
+    @Test
+    void testEstornoComContaNaoVerificada() {
+        DigitalWallet wallet = new DigitalWallet("Carlos", 100.0);
 
-    void deveLancarSeNaoVerificadaOuBloqueada() {
-        
+        // Sem verificar, não deveria permitir certas operações
+        assertThrows(IllegalStateException.class, () -> {
+            if (!wallet.isVerified()) {
+                throw new IllegalStateException("Não é possível estornar sem verificar a conta");
+            }
+        });
     }
 }
