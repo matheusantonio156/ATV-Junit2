@@ -1,16 +1,22 @@
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import org.junit.jupiter.api.Test;
 
-import com.example.DigitalWallet;
+import static org.junit.jupiter.api.Assertions.*;
 
-class SaldoInicial {
-        void deveConfigurarSaldoInicialCorreto() {
-            
-        }
+public class SaldoInicial {
 
-        void deveLancarExcecaoParaSaldoInicialNegativo() {
-            
-        }
+    @Test
+    void testInitialBalance() {
+        DigitalWallet wallet = new DigitalWallet("Alice", 100.0);
+        assertEquals(100.0, wallet.getBalance());
+        assertEquals("Alice", wallet.getOwner());
+        assertFalse(wallet.isVerified());
+        assertFalse(wallet.isLocked());
     }
+
+    @Test
+    void testInitialBalanceNegative() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            new DigitalWallet("Bob", -50.0);
+        });
+    }
+}
